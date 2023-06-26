@@ -3,7 +3,6 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <PublishAOT>true</PublishAOT>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
