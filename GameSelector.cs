@@ -10,7 +10,10 @@ class GameSelector : Grid
     readonly Label imageSizeLabel = new() { Halign = Align.End };
     readonly Label symbianLabel = new() { Halign = Align.End };
     public readonly Button startGameButton =
-        new("开始游戏") { Halign = Align.Fill };
+        new("开始游戏") { Halign = Align.Fill, Hexpand = true };
+
+    public readonly Button createShortCutLink =
+        new("创建桌面快捷方式") { Halign = Align.Fill, Hexpand = true };
 
     GameConfig? _gameConfig;
     public GameConfig? GameConfig
@@ -20,6 +23,7 @@ class GameSelector : Grid
         {
             _gameConfig = value;
             startGameButton.Sensitive = value != null;
+            createShortCutLink.Sensitive = startGameButton.Sensitive;
             gameIcon.Clear();
 
             if (value == null)
@@ -89,5 +93,7 @@ class GameSelector : Grid
         };
 
         startGameButton.Clicked += (_1, _2) => GameConfig!.StartGame(window);
+        createShortCutLink.Clicked += (_1, _2) =>
+            GameConfig.CreateShortcutOnDesktop();
     }
 }

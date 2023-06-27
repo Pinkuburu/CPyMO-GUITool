@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 
 class GameConfig
 {
@@ -57,5 +58,27 @@ class GameConfig
         else
             System.Diagnostics.Process.Start(
                 CPyMOTools.CPyMOExecutable!, GameDir);
+    }
+
+    [SupportedOSPlatform("windows")]
+    public void CreateShortcutOnDesktop()
+    {
+        var desktopDir = Environment.GetFolderPath(
+            Environment.SpecialFolder.Desktop);
+        var lnkFileName =
+            GameTitle
+                .Split('\n')
+                .Where(x => !string.IsNullOrEmpty(x))
+                .FirstOrDefault();
+
+        var lnkPath = Path.Combine(desktopDir, lnkFileName + ".lnk");
+
+        var shellType = Type.GetTypeFromProgID("WScript.Shell");
+        dynamic shell = Activator.CreateInstance(shellType!)!;
+        var shortcut = shell.CreateShortcut(lnkPath);
+        shortcut.TargetPath = CPyMOTools.CPyMOExecutable;
+        if (IconPath != null) shortcut.IconLocation = IconPath!;
+        shortcut.WorkingDirectory = GameDir;
+        shortcut.Save();
     }
 }
