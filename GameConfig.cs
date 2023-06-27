@@ -1,8 +1,10 @@
 using System;
+using System.Drawing;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
+using System.Drawing.Imaging;
 
 class GameConfig
 {
@@ -18,6 +20,52 @@ class GameConfig
             if (File.Exists(path)) return path;
             else return null;
         }
+    }
+
+    [SupportedOSPlatform("windows")]
+    public void OpenInFileExplorer()
+    {
+        System.Diagnostics.Process.Start("explorer.exe", GameDir);
+    }
+
+    [SupportedOSPlatform("windows")]
+    string? EnsureWindowsIcoFile()
+    {
+        if (IconPath == null) return null;
+
+        var icoPath = Path.Join(GameDir, "icon.ico");
+        if (File.Exists(icoPath)) return icoPath;
+        if (!BitConverter.IsLittleEndian) return null;
+
+        using Bitmap iconBitmapOrg = new(IconPath!);
+        using Bitmap iconBitmap = new(iconBitmapOrg, 64, 64);
+        using MemoryStream iconBitmapStream = new();
+        iconBitmap.Save(iconBitmapStream, ImageFormat.Png);
+        iconBitmapStream.Flush();
+        using var fs = File.Open(icoPath, FileMode.Create);
+        using var icoWriter = new BinaryWriter(fs);
+
+        icoWriter.Write((byte)0);
+        icoWriter.Write((byte)0);
+
+        icoWriter.Write((short)1);
+        icoWriter.Write((short)1);
+        icoWriter.Write((byte)iconBitmap.Width);
+        icoWriter.Write((byte)iconBitmap.Height);
+
+        icoWriter.Write((byte)0);
+        icoWriter.Write((byte)0);
+        icoWriter.Write((short)0);
+        icoWriter.Write((short)32);
+        icoWriter.Write((int)iconBitmapStream.Length);
+        icoWriter.Write(6 + 16);
+        icoWriter.Write(iconBitmapStream.ToArray());
+        icoWriter.Flush();
+
+        icoWriter.Close();
+        fs.Close();
+
+        return icoPath;
     }
 
     private readonly IReadOnlyDictionary<string, string[]> gameConfig;
@@ -48,13 +96,30 @@ class GameConfig
         catch { return null; }
     }
 
-    public void StartGame(Gtk.Window win)
+    public void StartGame(Gtk.Window win, Action<int>? onExited = null)
     {
         if (CPyMOTools.CPyMOExecutable == null)
+        {
             Utils.Msgbox(win, "找不到cpymo可执行文件。");
+            if (onExited != null) onExited!(-1);
+        }
         else
-            System.Diagnostics.Process.Start(
-                CPyMOTools.CPyMOExecutable!, GameDir);
+        {
+            System.Diagnostics.ProcessStartInfo startInfo = new()
+            {
+                WorkingDirectory = GameDir,
+                CreateNoWindow = true,
+                FileName = CPyMOTools.CPyMOExecutable
+            };
+
+            var prc = System.Diagnostics.Process.Start(startInfo);
+            prc!.EnableRaisingEvents = true;
+            prc!.Exited += (x, y) =>
+            {
+                if (onExited != null)
+                    onExited!(prc.ExitCode);
+            };
+        }
     }
 
     [SupportedOSPlatform("windows")]
@@ -74,7 +139,7 @@ class GameConfig
         dynamic shell = Activator.CreateInstance(shellType!)!;
         var shortcut = shell.CreateShortcut(lnkPath);
         shortcut.TargetPath = CPyMOTools.CPyMOExecutable;
-        if (IconPath != null) shortcut.IconLocation = IconPath!;
+        if (IconPath != null) shortcut.IconLocation = EnsureWindowsIcoFile();
         shortcut.WorkingDirectory = GameDir;
         shortcut.Save();
     }

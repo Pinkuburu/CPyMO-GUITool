@@ -16,6 +16,9 @@ class GameSelector : Grid
     public readonly Button createShortCutLink =
         new("创建桌面快捷方式") { Halign = Align.Fill, Hexpand = true };
 
+    public readonly Button openInFileExplorer =
+        new("打开文件夹") { Halign = Align.Fill, Hexpand = true };
+
     GameConfig? _gameConfig;
     public GameConfig? GameConfig
     {
@@ -25,6 +28,7 @@ class GameSelector : Grid
             _gameConfig = value;
             startGameButton.Sensitive = value != null;
             createShortCutLink.Sensitive = startGameButton.Sensitive;
+            openInFileExplorer.Sensitive = startGameButton.Sensitive;
             gameIcon.Clear();
 
             if (value == null)
@@ -47,7 +51,7 @@ class GameSelector : Grid
                     "s60v3" => "Symbian S60v3",
                     "s60v5" => "Symbian S60v5",
                     "pygame" => "",
-                    (var _) => "(未知的游戏平台)"
+                    var _ => "(未知的游戏平台)"
                 };
 
                 if (value.IconPath != null)
@@ -65,14 +69,14 @@ class GameSelector : Grid
 
         Attach(new Label("游戏文件夹：") { Halign = Align.Start }, 0, 0, 1, 1);
         Attach(gameDirLabel, 1, 0, 1, 1);
-        Button clickToOpenGameDir = new("选择") { Halign = Align.End };
-        Attach(clickToOpenGameDir, 2, 0, 1, 1);
+        Button clickToSelectGameDir = new("选择") { Halign = Align.End };
+        Attach(clickToSelectGameDir, 2, 0, 1, 1);
         Attach(gameIcon, 0, 1, 1, 2);
         Attach(gameTitleLabel, 1, 1, 1, 2);
         Attach(imageSizeLabel, 2, 1, 1, 1);
         Attach(symbianLabel, 2, 2, 1, 1);
 
-        clickToOpenGameDir.Clicked += (_1, _2) =>
+        clickToSelectGameDir.Clicked += (_1, _2) =>
         {
             FileChooserNative gameSel = new(
                 "选择游戏", window, FileChooserAction.SelectFolder, "选择", "取消")
@@ -93,13 +97,28 @@ class GameSelector : Grid
             }
         };
 
-        startGameButton.Clicked += (_1, _2) => GameConfig!.StartGame(window);
-
+        startGameButton.Clicked += (_1, _2) =>
+        {
+            clickToSelectGameDir.Sensitive = false;
+            startGameButton.Sensitive = false;
+            GameConfig!.StartGame(window, _ =>
+            {
+                clickToSelectGameDir.Sensitive = true;
+                startGameButton.Sensitive = true;
+            });
+        };
 
         createShortCutLink.Clicked += (_1, _2) =>
         {
             if (OperatingSystem.IsWindows())
                 GameConfig!.CreateShortcutOnDesktop();
+            Utils.Msgbox(window, "已成功创建快捷方式！");
+        };
+
+        openInFileExplorer.Clicked += (_1, _2) =>
+        {
+            if (OperatingSystem.IsWindows())
+                GameConfig!.OpenInFileExplorer();
         };
     }
 }

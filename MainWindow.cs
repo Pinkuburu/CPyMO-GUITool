@@ -32,7 +32,11 @@ class MainWindow : Gtk.Window
 
         centerButtons.Attach(gameSelector.startGameButton, 0, 0, 1, 1);
         if (OperatingSystem.IsWindows())
+        {
             centerButtons.Attach(gameSelector.createShortCutLink, 1, 0, 1, 1);
+            centerButtons.Attach(gameSelector.openInFileExplorer, 2, 0, 1, 1);
+        }
+
         mainGrid.Attach(centerButtons, 0, 2, 1, 1);
 
         Notebook notebook = new();
