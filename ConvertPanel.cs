@@ -82,5 +82,76 @@ class ConvertPanel : Grid
         {
             start.Sensitive = gameConfig != null;
         };
+
+        start.Clicked += OnStart;
+        mainWindow = win;
+    }
+
+    readonly MainWindow mainWindow;
+
+    private void OnStart(object? sender, EventArgs e)
+    {
+        FileChooserNative fc = new(
+            "输出到", mainWindow, FileChooserAction.CreateFolder,
+            "转换", "取消")
+        {
+            Modal = true,
+            SelectMultiple = false
+        };
+
+        if (fc.Run() == (int)ResponseType.Accept)
+        {
+            var outDir = fc.Filename;
+
+            if (!System.IO.Directory.Exists(outDir))
+            {
+                try { System.IO.Directory.CreateDirectory(outDir); }
+                catch
+                {
+                    Utils.Msgbox(mainWindow, $"不能创建文件夹 \"{outDir}\"");
+                    return;
+                }
+            }
+
+            if (CPyMOTools.CPyMOToolExecutable == null)
+            {
+                Utils.Msgbox(mainWindow, "未能找到cpymo-tool。");
+                return;
+            }
+
+            mainWindow.GameSelector.ClickToSelectGameDir.Sensitive = false;
+            Sensitive = false;
+            var gameDir = mainWindow.GameSelector.GameConfig!.GameDir;
+            var spec = specs[targetSpecSelector.Active].Name;
+
+            var prc = new System.Diagnostics.Process
+            {
+                StartInfo = new()
+                {
+                    FileName = CPyMOTools.CPyMOToolExecutable,
+                    Arguments = $"convert {spec} \"{gameDir}\" \"{outDir}\" --pack"
+                },
+
+                EnableRaisingEvents = true
+            };
+
+            prc.Start();
+
+            prc.Exited += (_0, _1) =>
+            {
+                mainWindow.GameSelector.ClickToSelectGameDir.Sensitive = true;
+                Sensitive = true;
+
+                if (prc.ExitCode == 0)
+                {
+                    Utils.Msgbox(mainWindow, "转换成功。");
+                }
+                else
+                {
+                    Utils.Msgbox(
+                        mainWindow, "转换失败，错误代码：" + prc.ExitCode);
+                }
+            };
+        }
     }
 }

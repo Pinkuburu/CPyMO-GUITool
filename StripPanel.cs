@@ -18,7 +18,7 @@ class StripPanel : Button
         mainWindow = win;
     }
 
-    MainWindow mainWindow;
+    readonly MainWindow mainWindow;
 
     void OnClicked(object? sender, EventArgs e)
     {
