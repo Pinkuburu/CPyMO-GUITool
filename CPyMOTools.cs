@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 static class CPyMOTools
 {
@@ -16,7 +15,7 @@ static class CPyMOTools
         string exeSuffix = "";
         string pathEnv = "PATH";
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (OperatingSystem.IsWindows())
         {
             pathSep = ';';
             exeSuffix = ".exe";

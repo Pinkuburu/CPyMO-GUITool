@@ -1,5 +1,6 @@
 #pragma warning disable 0612, 0618
 
+using System;
 using Gtk;
 
 class GameSelector : Grid
@@ -41,7 +42,7 @@ class GameSelector : Grid
                 gameTitleLabel.Text = value.GameTitle;
                 imageSizeLabel.Text =
                     $"{value.ImageSize.Item1}x{value.ImageSize.Item2}";
-                symbianLabel.Text = value.GamePlatform switch
+                symbianLabel.Text = value.GamePlatform.ToLower() switch
                 {
                     "s60v3" => "Symbian S60v3",
                     "s60v5" => "Symbian S60v5",
@@ -93,7 +94,12 @@ class GameSelector : Grid
         };
 
         startGameButton.Clicked += (_1, _2) => GameConfig!.StartGame(window);
+
+
         createShortCutLink.Clicked += (_1, _2) =>
-            GameConfig.CreateShortcutOnDesktop();
+        {
+            if (OperatingSystem.IsWindows())
+                GameConfig!.CreateShortcutOnDesktop();
+        };
     }
 }
