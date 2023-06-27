@@ -70,6 +70,12 @@ class GameConfig
 
     private readonly IReadOnlyDictionary<string, string[]> gameConfig;
 
+    public string? GetValue(string key)
+    {
+        try { return gameConfig[key][0]; }
+        catch { return null; }
+    }
+
     private GameConfig(string dir)
     {
         var gameConfigPath = Path.Combine(dir, "./gameconfig.txt")!;
@@ -108,13 +114,18 @@ class GameConfig
             System.Diagnostics.ProcessStartInfo startInfo = new()
             {
                 WorkingDirectory = GameDir,
-                CreateNoWindow = true,
                 FileName = CPyMOTools.CPyMOExecutable
             };
 
-            var prc = System.Diagnostics.Process.Start(startInfo);
-            prc!.EnableRaisingEvents = true;
-            prc!.Exited += (x, y) =>
+            var prc = new System.Diagnostics.Process
+            {
+                StartInfo = startInfo,
+                EnableRaisingEvents = true
+            };
+
+            prc.Start();
+
+            prc.Exited += (x, y) =>
             {
                 if (onExited != null)
                     onExited!(prc.ExitCode);

@@ -13,6 +13,8 @@ class GameSelector : Grid
     readonly Button startGameButton =
         new("开始游戏") { Halign = Align.Fill, Hexpand = true };
 
+    public event Action<GameConfig?>? GameChanged;
+
     readonly Button createShortCutLink =
         new("创建桌面快捷方式") { Halign = Align.Fill, Hexpand = true };
 
@@ -80,6 +82,8 @@ class GameSelector : Grid
                 if (value.IconPath != null)
                     gameIcon.FromFile = value.IconPath!;
             }
+
+            GameChanged?.Invoke(_gameConfig);
         }
     }
 
