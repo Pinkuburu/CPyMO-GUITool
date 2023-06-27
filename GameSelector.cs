@@ -10,14 +10,37 @@ class GameSelector : Grid
     readonly Label gameTitleLabel = new() { Halign = Align.Start };
     readonly Label imageSizeLabel = new() { Halign = Align.End };
     readonly Label symbianLabel = new() { Halign = Align.End };
-    public readonly Button startGameButton =
+    readonly Button startGameButton =
         new("开始游戏") { Halign = Align.Fill, Hexpand = true };
 
-    public readonly Button createShortCutLink =
+    readonly Button createShortCutLink =
         new("创建桌面快捷方式") { Halign = Align.Fill, Hexpand = true };
 
-    public readonly Button openInFileExplorer =
+    readonly Button openInFileExplorer =
         new("打开文件夹") { Halign = Align.Fill, Hexpand = true };
+
+    public Grid ButtonPanel
+    {
+        get
+        {
+            Grid buttonPanel = new()
+            {
+                Halign = Align.Fill,
+                Hexpand = true,
+                ColumnSpacing = 4,
+                ColumnHomogeneous = true
+            };
+
+            buttonPanel.Attach(startGameButton, 0, 0, 1, 1);
+            if (OperatingSystem.IsWindows())
+            {
+                buttonPanel.Attach(createShortCutLink, 1, 0, 1, 1);
+                buttonPanel.Attach(openInFileExplorer, 2, 0, 1, 1);
+            }
+
+            return buttonPanel;
+        }
+    }
 
     GameConfig? _gameConfig;
     public GameConfig? GameConfig
