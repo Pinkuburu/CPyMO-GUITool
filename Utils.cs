@@ -23,16 +23,20 @@ static class Utils
 
     public static void Msgbox(Gtk.Window win, string msg)
     {
-        MessageDialog msgbox = new(
-            win, DialogFlags.Modal, MessageType.Warning,
-            ButtonsType.Ok, false, msg)
+        Application.Invoke((_0, _1) =>
         {
-            WidthRequest = 192,
-            Title = win.Title
-        };
+            MessageDialog msgbox = new(
+                win, DialogFlags.Modal, MessageType.Warning,
+                ButtonsType.Ok, false, msg)
+            {
+                WidthRequest = 192,
+                Title = win.Title,
+                Modal = true
+            };
 
-        msgbox.Child.Margin = 12;
-        msgbox.Run();
-        msgbox.Destroy();
+            msgbox.Child.Margin = 12;
+            msgbox.Run();
+            msgbox.Destroy();
+        });
     }
 }

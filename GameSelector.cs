@@ -45,6 +45,8 @@ class GameSelector : Grid
     }
 
     GameConfig? _gameConfig;
+    public readonly Button ClickToSelectGameDir;
+
     public GameConfig? GameConfig
     {
         get => _gameConfig;
@@ -96,14 +98,14 @@ class GameSelector : Grid
 
         Attach(new Label("游戏文件夹：") { Halign = Align.Start }, 0, 0, 1, 1);
         Attach(gameDirLabel, 1, 0, 1, 1);
-        Button clickToSelectGameDir = new("选择") { Halign = Align.End };
-        Attach(clickToSelectGameDir, 2, 0, 1, 1);
+        ClickToSelectGameDir = new("选择") { Halign = Align.End };
+        Attach(ClickToSelectGameDir, 2, 0, 1, 1);
         Attach(gameIcon, 0, 1, 1, 2);
         Attach(gameTitleLabel, 1, 1, 1, 2);
         Attach(imageSizeLabel, 2, 1, 1, 1);
         Attach(symbianLabel, 2, 2, 1, 1);
 
-        clickToSelectGameDir.Clicked += (_1, _2) =>
+        ClickToSelectGameDir.Clicked += (_1, _2) =>
         {
             FileChooserNative gameSel = new(
                 "选择游戏", window, FileChooserAction.SelectFolder, "选择", "取消")
@@ -126,11 +128,11 @@ class GameSelector : Grid
 
         startGameButton.Clicked += (_1, _2) =>
         {
-            clickToSelectGameDir.Sensitive = false;
+            ClickToSelectGameDir.Sensitive = false;
             startGameButton.Sensitive = false;
             GameConfig!.StartGame(window, _ =>
             {
-                clickToSelectGameDir.Sensitive = true;
+                ClickToSelectGameDir.Sensitive = true;
                 startGameButton.Sensitive = true;
             });
         };

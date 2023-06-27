@@ -160,7 +160,7 @@ class UnpackPanel : Grid
 
         if (CPyMOTools.CPyMOToolExecutable == null)
         {
-            Utils.Msgbox(mainWindow, "未能找到cpymo-tool。 ");
+            Utils.Msgbox(mainWindow, "未能找到cpymo-tool。");
             return;
         }
 
@@ -181,6 +181,10 @@ class UnpackPanel : Grid
         prc.Exited += (_0, _1) =>
         {
             start.Sensitive = true;
+            if (prc.ExitCode == 0)
+                Utils.Msgbox(mainWindow, "解包成功。");
+            else
+                Utils.Msgbox(mainWindow, "解包失败，错误代码：" + prc.ExitCode);
         };
     }
 }
