@@ -31,8 +31,11 @@ class GameConfig
             .ToDictionary(x => x[0], x => x[1..]);
         GameDir = dir;
 
-        GameTitle = gameConfig["gametitle"][0].Replace("\\n", "\n");
-        GamePlatform = gameConfig["platform"][0];
+        try { GameTitle = gameConfig["gametitle"][0].Replace("\\n", "\n"); }
+        catch { GameTitle = "Unknown"; }
+
+        try { GamePlatform = gameConfig["platform"][0]; }
+        catch { GamePlatform = ""; }
 
         var imageSize = gameConfig["imagesize"];
         ImageSize = Tuple.Create(
@@ -41,14 +44,8 @@ class GameConfig
 
     public static GameConfig? FromGameDir(string dir)
     {
-        try
-        {
-            return new GameConfig(dir);
-        }
-        catch
-        {
-            return null;
-        }
+        try { return new GameConfig(dir); }
+        catch { return null; }
     }
 
     public void StartGame(Gtk.Window win)
