@@ -1,13 +1,16 @@
-#pragma warning disable 0612
+#pragma warning disable 0612, 0618
 
 using Gtk;
 
 class GameSelector : Grid
 {
     readonly Label gameDirLabel = new() { Halign = Align.Start };
+    readonly Image gameIcon = new() { Halign = Align.End, Valign = Align.Center };
     readonly Label gameTitleLabel = new() { Halign = Align.Start };
     readonly Label imageSizeLabel = new() { Halign = Align.End };
     readonly Label symbianLabel = new() { Halign = Align.End };
+    public readonly Button startGameButton =
+        new("开始游戏") { Halign = Align.Fill };
 
     GameConfig? _gameConfig;
     public GameConfig? GameConfig
@@ -16,6 +19,9 @@ class GameSelector : Grid
         set
         {
             _gameConfig = value;
+            startGameButton.Sensitive = value != null;
+            gameIcon.Clear();
+
             if (value == null)
             {
                 gameDirLabel.Text = "(空)";
@@ -38,6 +44,9 @@ class GameSelector : Grid
                     "pygame" => "",
                     (var _) => "(未知的游戏平台)"
                 };
+
+                if (value.IconPath != null)
+                    gameIcon.FromFile = value.IconPath!;
             }
         }
     }
@@ -53,7 +62,8 @@ class GameSelector : Grid
         Attach(gameDirLabel, 1, 0, 1, 1);
         Button clickToOpenGameDir = new("选择") { Halign = Align.End };
         Attach(clickToOpenGameDir, 2, 0, 1, 1);
-        Attach(gameTitleLabel, 0, 1, 2, 2);
+        Attach(gameIcon, 0, 1, 1, 2);
+        Attach(gameTitleLabel, 1, 1, 1, 2);
         Attach(imageSizeLabel, 2, 1, 1, 1);
         Attach(symbianLabel, 2, 2, 1, 1);
 
@@ -78,5 +88,6 @@ class GameSelector : Grid
             }
         };
 
+        startGameButton.Clicked += (_1, _2) => GameConfig!.StartGame(window);
     }
 }

@@ -9,6 +9,15 @@ class GameConfig
     public string GameTitle { get; }
     public string GamePlatform { get; }
     public Tuple<int, int> ImageSize { get; }
+    public string? IconPath
+    {
+        get
+        {
+            var path = Path.Combine(GameDir, "./icon.png");
+            if (File.Exists(path)) return path;
+            else return null;
+        }
+    }
 
     private readonly IReadOnlyDictionary<string, string[]> gameConfig;
 
@@ -39,5 +48,14 @@ class GameConfig
         {
             return null;
         }
+    }
+
+    public void StartGame(Gtk.Window win)
+    {
+        if (CPyMOTools.CPyMOExecutable == null)
+            Utils.Msgbox(win, "找不到cpymo可执行文件。");
+        else
+            System.Diagnostics.Process.Start(
+                CPyMOTools.CPyMOExecutable!, GameDir);
     }
 }
