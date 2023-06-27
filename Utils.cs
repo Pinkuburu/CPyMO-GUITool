@@ -1,4 +1,5 @@
 using Gdk;
+using Gtk;
 
 static class Utils
 {
@@ -19,4 +20,19 @@ static class Utils
             Green = 0,
             Blue = 2.0 / 255.0
         };
+
+    public static void Msgbox(Gtk.Window win, string msg)
+    {
+        MessageDialog msgbox = new(
+            win, DialogFlags.Modal, MessageType.Warning,
+            ButtonsType.Ok, false, msg)
+        {
+            WidthRequest = 192,
+            Title = win.Title
+        };
+
+        msgbox.Child.Margin = 12;
+        msgbox.Run();
+        msgbox.Destroy();
+    }
 }
