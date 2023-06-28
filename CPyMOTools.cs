@@ -15,7 +15,9 @@ static class CPyMOTools
         string exeSuffix = "";
         string pathEnv = "PATH";
 
+        #if NET
         if (OperatingSystem.IsWindows())
+        #endif
         {
             pathSep = ';';
             exeSuffix = ".exe";

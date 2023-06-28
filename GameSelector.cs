@@ -34,7 +34,9 @@ class GameSelector : Grid
             };
 
             buttonPanel.Attach(startGameButton, 0, 0, 1, 1);
+            #if NET
             if (OperatingSystem.IsWindows())
+            #endif
             {
                 buttonPanel.Attach(createShortCutLink, 1, 0, 1, 1);
                 buttonPanel.Attach(openInFileExplorer, 2, 0, 1, 1);
@@ -139,14 +141,18 @@ class GameSelector : Grid
 
         createShortCutLink.Clicked += (_1, _2) =>
         {
+            #if NET
             if (OperatingSystem.IsWindows())
+            #endif
                 GameConfig!.CreateShortcutOnDesktop();
             Utils.Msgbox(window, "已成功创建快捷方式！");
         };
 
         openInFileExplorer.Clicked += (_1, _2) =>
         {
+            #if NET
             if (OperatingSystem.IsWindows())
+            #endif
                 GameConfig!.OpenInFileExplorer();
         };
     }

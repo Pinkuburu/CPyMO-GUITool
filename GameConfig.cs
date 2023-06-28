@@ -22,18 +22,22 @@ class GameConfig
         }
     }
 
+    #if NET
     [SupportedOSPlatform("windows")]
+    #endif
     public void OpenInFileExplorer()
     {
         System.Diagnostics.Process.Start("explorer.exe", GameDir);
     }
 
+    #if NET
     [SupportedOSPlatform("windows")]
+    #endif
     string? EnsureWindowsIcoFile()
     {
         if (IconPath == null) return null;
 
-        var icoPath = Path.Join(GameDir, "icon.ico");
+        var icoPath = Path.Combine(GameDir, "icon.ico");
         if (File.Exists(icoPath)) return icoPath;
         if (!BitConverter.IsLittleEndian) return null;
 
@@ -82,7 +86,7 @@ class GameConfig
         gameConfig = File.ReadAllLines(gameConfigPath)
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Split(','))
-            .ToDictionary(x => x[0], x => x[1..]);
+            .ToDictionary(x => x[0], x => x.Skip(1).ToArray());
         GameDir = dir;
 
         try { GameTitle = gameConfig["gametitle"][0].Replace("\\n", "\n"); }
@@ -133,7 +137,9 @@ class GameConfig
         }
     }
 
+    #if NET
     [SupportedOSPlatform("windows")]
+    #endif
     public void CreateShortcutOnDesktop()
     {
         var desktopDir = Environment.GetFolderPath(
