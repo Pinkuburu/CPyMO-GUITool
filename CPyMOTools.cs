@@ -29,7 +29,7 @@ static class CPyMOTools
                 .Split(pathSep)
                 .ToList();
 
-        path.Add(Environment.CurrentDirectory);
+        path.Insert(0, Environment.CurrentDirectory);
 
         CPyMOToolExecutable = FindExecutableFile(path, "cpymo-tool", exeSuffix);
         CPyMOExecutable = FindExecutableFile(path, "cpymo", exeSuffix);

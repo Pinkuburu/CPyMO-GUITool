@@ -129,7 +129,8 @@ class ConvertPanel : Grid
                 StartInfo = new()
                 {
                     FileName = CPyMOTools.CPyMOToolExecutable,
-                    Arguments = $"convert {spec} \"{gameDir}\" \"{outDir}\" --pack"
+                    Arguments = $"convert {spec} \"{gameDir}\" \"{outDir}\" --pack",
+                    WorkingDirectory = Environment.CurrentDirectory,
                 },
 
                 EnableRaisingEvents = true
