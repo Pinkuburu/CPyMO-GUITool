@@ -171,7 +171,7 @@ class UnpackPanel : Grid
             return;
         }
 
-        start.Sensitive = false;
+        Sensitive = false;
         var prc = new System.Diagnostics.Process
         {
             StartInfo = new()
@@ -187,7 +187,7 @@ class UnpackPanel : Grid
 
         prc.Exited += (_0, _1) =>
         {
-            start.Sensitive = true;
+            Sensitive = true;
             if (prc.ExitCode == 0)
                 Utils.Msgbox(mainWindow, "解包成功。");
             else
