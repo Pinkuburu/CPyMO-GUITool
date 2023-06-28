@@ -68,7 +68,7 @@ class ConvertPanel : Grid
         Attach(targetSpecSelector, 1, 0, 1, 1);
         Attach(targetSpecDescLabel, 1, 1, 1, 1);
 
-        Button start = new("开始转换")
+        Button start = new("转换")
         {
             Halign = Align.Center,
             HeightRequest = 64,
@@ -99,7 +99,10 @@ class ConvertPanel : Grid
             SelectMultiple = false
         };
 
-        if (fc.Run() == (int)ResponseType.Accept)
+        var res = fc.Run();
+        fc.Destroy();
+
+        if (res == (int)ResponseType.Accept)
         {
             var outDir = fc.Filename;
 

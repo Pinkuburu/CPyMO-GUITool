@@ -116,7 +116,10 @@ class GameSelector : Grid
                 SelectMultiple = false
             };
 
-            if (gameSel.Run() == (int)ResponseType.Accept)
+            var res = gameSel.Run();
+            gameSel.Destroy();
+
+            if (res == (int)ResponseType.Accept)
             {
                 var gameConfig = GameConfig.FromGameDir(gameSel.Filename);
                 if (gameConfig == null)

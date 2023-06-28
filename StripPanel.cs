@@ -3,7 +3,7 @@ using Gtk;
 
 class StripPanel : Button
 {
-    public StripPanel(MainWindow win) : base("开始精简")
+    public StripPanel(MainWindow win) : base("精简")
     {
         Sensitive = false;
         Halign = Align.Center;
@@ -30,7 +30,10 @@ class StripPanel : Button
             SelectMultiple = false
         };
 
-        if (fc.Run() == (int)ResponseType.Accept)
+        var res = fc.Run();
+        fc.Destroy();
+
+        if (res == (int)ResponseType.Accept)
         {
             var outDir = fc.Filename;
 

@@ -17,7 +17,7 @@ class UnpackPanel : Grid
         Text = ""
     };
 
-    readonly Button start = new("开始解包")
+    readonly Button start = new("解包")
     {
         Sensitive = false,
         HeightRequest = 64,
@@ -68,8 +68,12 @@ class UnpackPanel : Grid
 
         selectDirButton.Clicked += (_0, _1) =>
         {
-            FileFilter fileFilter = new();
+            FileFilter fileFilter = new()
+            {
+                Name = "PyMO Package"
+            };
             fileFilter.AddPattern("*.pak");
+
             FileChooserNative pakSel = new(
                 "选择包文件", win, FileChooserAction.Open,
                 "选择", "取消")
@@ -93,6 +97,8 @@ class UnpackPanel : Grid
 
                 pakFileEntry.Text = pak;
             }
+
+            pakSel.Destroy();
         };
 
         pakFileEntry.Changed += (_, _) =>
@@ -137,6 +143,7 @@ class UnpackPanel : Grid
 
         if (fileChooser.Run() == (int)ResponseType.Accept)
             Unpack(pakFileEntry.Text, extNameEntry.Text, fileChooser.Filename);
+        fileChooser.Destroy();
     }
 
     void Unpack(string pakPath, string ext, string outDir)
